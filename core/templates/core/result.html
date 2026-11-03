@@ -1,0 +1,426 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-center my-4 pb-3 border-bottom" style="border-color: var(--border-color) !important;">
+    <div class="mb-3 mb-md-0 text-center text-md-start">
+        <h2 class="fw-bold mb-1">Your Eligibility Results</h2>
+        <p class="text-muted mb-0">Navigate the interactive matrix to discover matched opportunities.</p>
+    </div>
+    <div class="d-flex gap-3 align-items-center">
+        <button onclick="location.reload()" class="reset-btn d-none" id="resetBtnTop">
+            <i class="bi bi-arrow-counterclockwise me-1"></i> Reset Selection
+        </button>
+        <a href="{% url 'check_eligibility' %}" class="btn-primary-saas text-decoration-none shadow-sm px-4">
+            <i class="bi bi-sliders me-2"></i> Refine Details
+        </a>
+    </div>
+</div>
+
+{% if not govt.schemes and not govt.scholarships and not govt.internships and not private.schemes and not private.scholarships and not private.internships %}
+<!-- EMPTY STATE -->
+<div class="row justify-content-center my-5">
+    <div class="col-lg-8 text-center">
+        <div class="saas-card p-5 reveal-on-scroll">
+            <i class="bi bi-search fs-1 text-muted mb-3 d-block"></i>
+            <h3 class="fw-bold mb-3">No direct matches crossed the threshold</h3>
+            <p class="text-muted mb-4">We mathematically filtered through all active opportunities but couldn't compute a Match Score of ≥ 6/10 for your explicit demographics.</p>
+            <div class="bg-transparent border p-4 rounded text-start d-inline-block w-100" style="border-color: var(--border-color) !important; max-width: 500px;">
+                <h5 class="fw-bold fs-6 mb-3 text-main">Why exactly 0 results were shown:</h5>
+                <ul class="text-muted small mb-0 ps-3">
+                    {% for reason in unmatched_reasons %}
+                        <li class="mb-2"><i class="bi bi-x-circle text-danger me-1"></i> {{ reason }}</li>
+                    {% empty %}
+                        <li class="mb-2"><i class="bi bi-x-circle text-danger me-1"></i> Your precise parameter combination (Income, Age, Skills) did not natively overlap with any high-relevance datasets.</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="mt-4">
+                <a href="{% url 'check_eligibility' %}" class="btn-primary-saas text-decoration-none">Recalculate Profile Parameters</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% else %}
+
+<!-- =========================
+     STEP 1: SECTOR SELECTION
+========================= -->
+<div class="my-5 text-center reveal-on-scroll" id="step1">
+    <h3 class="fw-bold mb-4 fs-4"><i class="bi bi-1-circle me-2 text-primary"></i> Choose Sector</h3>
+    <div class="selection-step">
+        <button id="sector-govt" class="step-btn sector-btn" onclick="selectSector('govt')">
+            <i class="bi bi-bank me-2"></i> Government ({{ govt_count }})
+        </button>
+        <button id="sector-private" class="step-btn sector-btn" onclick="selectSector('private')">
+            <i class="bi bi-building me-2"></i> Private ({{ private_count }})
+        </button>
+    </div>
+</div>
+
+<!-- =========================
+     STEP 2: TYPE SELECTION
+========================= -->
+<div class="my-5 text-center reveal-on-scroll" id="typeSection" style="display:none; transition: all 0.4s ease;">
+    <h3 class="fw-bold mb-4 fs-4"><i class="bi bi-2-circle me-2 text-primary"></i> Select Category</h3>
+    <div class="selection-step">
+        <button id="type-schemes" class="step-btn type-btn" onclick="selectType('schemes')">
+            <i class="bi bi-shield-check me-2"></i> Schemes
+        </button>
+        <button id="type-scholarships" class="step-btn type-btn" onclick="selectType('scholarships')">
+            <i class="bi bi-mortarboard me-2"></i> Scholarships
+        </button>
+        <button id="type-internships" class="step-btn type-btn" onclick="selectType('internships')">
+            <i class="bi bi-briefcase me-2"></i> Internships
+        </button>
+    </div>
+</div>
+
+<!-- =========================
+     STEP 3: RESULTS ENGINE
+========================= -->
+<div id="resultSection" style="display:none;" class="mb-5 pt-4 border-top" style="border-color: var(--border-color)!important;">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="fw-bold mb-0 fs-4 text-primary" id="resultTitle">Matched Opportunities</h3>
+    </div>
+    
+    <div class="row" id="cardsWrapper">
+        <!-- ==============================
+             GOVERNMENT OPPORTUNITIES 
+             ============================== -->
+        {% for result in govt.schemes %}
+        <div class="col-md-6 mb-4 result-card reveal-on-scroll" data-sector="govt" data-type="schemes">
+            <div class="saas-card h-100 flex-column border-top-0 position-relative glass-card" style="display: flex;">
+                <div class="position-absolute top-0 start-0 w-100 bg-primary" style="height: 4px;"></div>
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <h4 class="fw-bold fs-5 mb-0" style="color:var(--primary);">{{ result.name }}</h4>
+                    <div class="match-score px-2 py-1 rounded border small fw-bold" style="border-color: var(--primary) !important; color: var(--primary); background: rgba(59, 130, 246, 0.1);">
+                        <i class="bi bi-lightning-charge-fill me-1"></i> Match: {{ result.score }}/10
+                    </div>
+                </div>
+                {% if result.deadline %}
+                <div class="mb-3">
+                    <span class="badge bg-transparent border {% if result.is_expired %}border-danger text-danger{% else %}border-success text-success{% endif %} px-2 py-1" style="font-size: 0.8rem;">
+                        <i class="bi bi-calendar-check me-1"></i> {% if result.is_expired %}Expired: {{ result.deadline|date:"d M Y" }}{% else %}Apply before: {{ result.deadline|date:"d M Y" }}{% endif %}
+                    </span>
+                </div>
+                {% endif %}
+                <div class="p-3 bg-light-soft border rounded mb-3" style="border-color: var(--border-color) !important;">
+                    <span class="fw-bold d-block mb-2 small text-main">Why you're a match:</span>
+                    <ul class="small text-muted mb-0 ps-1 list-unstyled">
+                        {% for reason in result.reasons %}
+                        <li class="mb-1"><i class="bi bi-check2-circle text-success me-1"></i> {{ reason }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% if result.missing_documents %}
+                <div class="p-3 bg-danger-soft border rounded mb-3" style="border-color: var(--danger) !important; border-style: dashed !important;">
+                    <span class="fw-bold d-block mb-2 small text-danger">Missing Documents:</span>
+                    <ul class="small text-muted mb-0 ps-3">
+                        {% for doc in result.missing_documents %}<li class="text-danger">{{ doc }}</li>{% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+                {% if result.description %}<p class="text-muted small mb-3">{{ result.description }}</p>{% endif %}
+                <a href="{{ result.source|default:'#' }}" target="_blank" class="btn-primary-saas w-100 text-decoration-none mt-auto justify-content-center">Secure Opportunity</a>
+            </div>
+        </div>
+        {% endfor %}
+
+        {% for result in govt.scholarships %}
+        <div class="col-md-6 mb-4 result-card reveal-on-scroll" data-sector="govt" data-type="scholarships">
+            <div class="saas-card h-100 flex-column border-top-0 position-relative glass-card" style="display: flex;">
+                <div class="position-absolute top-0 start-0 w-100 bg-success" style="height: 4px;"></div>
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <h4 class="fw-bold fs-5 mb-0" style="color:#10b981;">{{ result.name }}</h4>
+                    <div class="match-score px-2 py-1 rounded border small fw-bold" style="border-color: #10b981 !important; color: #10b981; background: rgba(16, 185, 129, 0.1);">
+                        <i class="bi bi-lightning-charge-fill me-1"></i> Match: {{ result.score }}/10
+                    </div>
+                </div>
+                {% if result.deadline %}
+                <div class="mb-3">
+                    <span class="badge bg-transparent border {% if result.is_expired %}border-danger text-danger{% else %}border-success text-success{% endif %} px-2 py-1" style="font-size: 0.8rem;">
+                        <i class="bi bi-calendar-check me-1"></i> {% if result.is_expired %}Expired: {{ result.deadline|date:"d M Y" }}{% else %}Apply before: {{ result.deadline|date:"d M Y" }}{% endif %}
+                    </span>
+                </div>
+                {% endif %}
+                <div class="p-3 bg-light-soft border rounded mb-3" style="border-color: var(--border-color) !important;">
+                    <span class="fw-bold d-block mb-2 small text-main">Why you're a match:</span>
+                    <ul class="small text-muted mb-0 ps-1 list-unstyled">
+                        {% for reason in result.reasons %}
+                        <li class="mb-1"><i class="bi bi-check2-circle text-success me-1"></i> {{ reason }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% if result.missing_documents %}
+                <div class="p-3 bg-danger-soft border rounded mb-3" style="border-color: var(--danger) !important; border-style: dashed !important;">
+                    <span class="fw-bold d-block mb-2 small text-danger">Missing Documents:</span>
+                    <ul class="small text-muted mb-0 ps-3">
+                        {% for doc in result.missing_documents %}<li class="text-danger">{{ doc }}</li>{% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+                {% if result.description %}<p class="text-muted small mb-3">{{ result.description }}</p>{% endif %}
+                <a href="{{ result.source|default:'#' }}" target="_blank" class="btn-primary-saas w-100 text-decoration-none mt-auto justify-content-center" style="background: linear-gradient(135deg, #10b981, #059669);">Secure Opportunity</a>
+            </div>
+        </div>
+        {% endfor %}
+
+        {% for result in govt.internships %}
+        <div class="col-md-6 mb-4 result-card reveal-on-scroll" data-sector="govt" data-type="internships">
+            <div class="saas-card h-100 flex-column border-top-0 position-relative glass-card" style="display: flex;">
+                <div class="position-absolute top-0 start-0 w-100 bg-warning" style="height: 4px;"></div>
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <h4 class="fw-bold fs-5 mb-0" style="color:#f59e0b;">{{ result.name }}</h4>
+                    <div class="match-score px-2 py-1 rounded border small fw-bold" style="border-color: #f59e0b !important; color: #f59e0b; background: rgba(245, 158, 11, 0.1);">
+                        <i class="bi bi-lightning-charge-fill me-1"></i> Match: {{ result.score }}/10
+                    </div>
+                </div>
+                {% if result.deadline %}
+                <div class="mb-3">
+                    <span class="badge bg-transparent border {% if result.is_expired %}border-danger text-danger{% else %}border-success text-success{% endif %} px-2 py-1" style="font-size: 0.8rem;">
+                        <i class="bi bi-calendar-check me-1"></i> {% if result.is_expired %}Expired: {{ result.deadline|date:"d M Y" }}{% else %}Apply before: {{ result.deadline|date:"d M Y" }}{% endif %}
+                    </span>
+                </div>
+                {% endif %}
+                <div class="p-3 bg-light-soft border rounded mb-3" style="border-color: var(--border-color) !important;">
+                    <span class="fw-bold d-block mb-2 small text-main">Why you're a match:</span>
+                    <ul class="small text-muted mb-0 ps-1 list-unstyled">
+                        {% for reason in result.reasons %}
+                        <li class="mb-1"><i class="bi bi-check2-circle text-success me-1"></i> {{ reason }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% if result.description %}<p class="text-muted small mb-3">{{ result.description }}</p>{% endif %}
+                <a href="{{ result.source|default:'#' }}" target="_blank" class="btn-primary-saas w-100 text-decoration-none mt-auto justify-content-center" style="background: linear-gradient(135deg, #f59e0b, #d97706); border:none;">Secure Opportunity</a>
+            </div>
+        </div>
+        {% endfor %}
+
+        <!-- ==============================
+             PRIVATE OPPORTUNITIES 
+             ============================== -->
+        {% for result in private.schemes %}
+        <div class="col-md-6 mb-4 result-card reveal-on-scroll" data-sector="private" data-type="schemes">
+            <div class="saas-card h-100 flex-column border-top-0 position-relative glass-card" style="display: flex;">
+                <div class="position-absolute top-0 start-0 w-100" style="background:var(--accent-2); height: 4px;"></div>
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <h4 class="fw-bold fs-5 mb-0" style="color:var(--accent-2);">{{ result.name }}</h4>
+                    <div class="match-score px-2 py-1 rounded border small fw-bold" style="border-color: var(--accent-2) !important; color: var(--accent-2); background: rgba(139, 92, 246, 0.1);">
+                        <i class="bi bi-lightning-charge-fill me-1"></i> Match: {{ result.score }}/10
+                    </div>
+                </div>
+                {% if result.deadline %}
+                <div class="mb-3">
+                    <span class="badge bg-transparent border {% if result.is_expired %}border-danger text-danger{% else %}border-success text-success{% endif %} px-2 py-1" style="font-size: 0.8rem;">
+                        <i class="bi bi-calendar-check me-1"></i> {% if result.is_expired %}Expired: {{ result.deadline|date:"d M Y" }}{% else %}Apply before: {{ result.deadline|date:"d M Y" }}{% endif %}
+                    </span>
+                </div>
+                {% endif %}
+                <div class="p-3 bg-light-soft border rounded mb-3" style="border-color: var(--border-color) !important;">
+                    <span class="fw-bold d-block mb-2 small text-main">Why you're a match:</span>
+                    <ul class="small text-muted mb-0 ps-1 list-unstyled">
+                        {% for reason in result.reasons %}
+                        <li class="mb-1"><i class="bi bi-check2-circle text-success me-1"></i> {{ reason }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% if result.description %}<p class="text-muted small mb-3">{{ result.description }}</p>{% endif %}
+                <a href="{{ result.source|default:'#' }}" target="_blank" class="btn-outline-saas w-100 text-decoration-none mt-auto justify-content-center">Secure Opportunity</a>
+            </div>
+        </div>
+        {% endfor %}
+
+        {% for result in private.scholarships %}
+        <div class="col-md-6 mb-4 result-card reveal-on-scroll" data-sector="private" data-type="scholarships">
+            <div class="saas-card h-100 flex-column border-top-0 position-relative glass-card" style="display: flex;">
+                <div class="position-absolute top-0 start-0 w-100" style="background:var(--accent-2); height: 4px;"></div>
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <h4 class="fw-bold fs-5 mb-0" style="color:var(--accent-2);">{{ result.name }}</h4>
+                    <div class="match-score px-2 py-1 rounded border small fw-bold" style="border-color: var(--accent-2) !important; color: var(--accent-2); background: rgba(139, 92, 246, 0.1);">
+                        <i class="bi bi-lightning-charge-fill me-1"></i> Match: {{ result.score }}/10
+                    </div>
+                </div>
+                {% if result.deadline %}
+                <div class="mb-3">
+                    <span class="badge bg-transparent border {% if result.is_expired %}border-danger text-danger{% else %}border-success text-success{% endif %} px-2 py-1" style="font-size: 0.8rem;">
+                        <i class="bi bi-calendar-check me-1"></i> {% if result.is_expired %}Expired: {{ result.deadline|date:"d M Y" }}{% else %}Apply before: {{ result.deadline|date:"d M Y" }}{% endif %}
+                    </span>
+                </div>
+                {% endif %}
+                <div class="p-3 bg-light-soft border rounded mb-3" style="border-color: var(--border-color) !important;">
+                    <span class="fw-bold d-block mb-2 small text-main">Why you're a match:</span>
+                    <ul class="small text-muted mb-0 ps-1 list-unstyled">
+                        {% for reason in result.reasons %}
+                        <li class="mb-1"><i class="bi bi-check2-circle text-success me-1"></i> {{ reason }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% if result.description %}<p class="text-muted small mb-3">{{ result.description }}</p>{% endif %}
+                <a href="{{ result.source|default:'#' }}" target="_blank" class="btn-outline-saas w-100 text-decoration-none mt-auto justify-content-center">Secure Opportunity</a>
+            </div>
+        </div>
+        {% endfor %}
+
+        {% for result in private.internships %}
+        <div class="col-md-6 mb-4 result-card reveal-on-scroll" data-sector="private" data-type="internships">
+            <div class="saas-card h-100 flex-column border-top-0 position-relative glass-card" style="display: flex;">
+                <div class="position-absolute top-0 start-0 w-100" style="background:var(--accent-1); height: 4px;"></div>
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <h4 class="fw-bold fs-5 mb-0" style="color:var(--accent-1);">{{ result.name }}</h4>
+                    <div class="match-score px-2 py-1 rounded border small fw-bold" style="border-color: var(--accent-1) !important; color: var(--accent-1); background: rgba(6, 182, 212, 0.1);">
+                        <i class="bi bi-lightning-charge-fill me-1"></i> Match: {{ result.score }}/10
+                    </div>
+                </div>
+                {% if result.deadline %}
+                <div class="mb-3">
+                    <span class="badge bg-transparent border {% if result.is_expired %}border-danger text-danger{% else %}border-success text-success{% endif %} px-2 py-1" style="font-size: 0.8rem;">
+                        <i class="bi bi-calendar-check me-1"></i> {% if result.is_expired %}Expired: {{ result.deadline|date:"d M Y" }}{% else %}Apply before: {{ result.deadline|date:"d M Y" }}{% endif %}
+                    </span>
+                </div>
+                {% endif %}
+                <div class="p-3 bg-light-soft border rounded mb-3" style="border-color: var(--border-color) !important;">
+                    <span class="fw-bold d-block mb-2 small text-main">Why you're a match:</span>
+                    <ul class="small text-muted mb-0 ps-1 list-unstyled">
+                        {% for reason in result.reasons %}
+                        <li class="mb-1"><i class="bi bi-check2-circle text-success me-1"></i> {{ reason }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% if result.description %}<p class="text-muted small mb-3">{{ result.description }}</p>{% endif %}
+                <a href="{{ result.source|default:'#' }}" target="_blank" class="btn-outline-saas w-100 text-decoration-none mt-auto justify-content-center">Secure Opportunity</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    </div>
+
+    <!-- FALLBACK IF NO CARDS IN SELECTED BRANCH -->
+    <div id="noResultsFallback" class="text-center p-5 border rounded mx-auto mt-4" style="display:none; border-color: var(--border-color) !important; max-width: 600px; background: var(--bg-card);">
+        <i class="bi bi-exclamation-circle fs-2 text-muted mb-3 d-block"></i>
+        <h4 class="fw-bold text-main fs-5 mb-2">No matching records here</h4>
+        <p class="text-muted mb-4 small">Your current vector profile does not mathematically cross the 6/10 eligibility threshold natively for this specific pipeline.</p>
+        <button onclick="document.getElementById('typeSection').scrollIntoView({behavior:'smooth'})" class="btn btn-outline-saas">
+            Explore Alternative Categories
+        </button>
+    </div>
+</div>
+
+{% endif %}
+
+<!-- =========================
+     GENERATIVE AI 
+========================= -->
+{% if ai_suggestions %}
+<div class="mt-5 pt-5 border-top position-relative" style="border-color: var(--border-color) !important; border-style: dashed !important; z-index:2;">
+    <div class="mb-4 reveal-on-scroll text-center text-md-start">
+        <h3 class="fw-bold mb-1 text-gradient"><i class="bi bi-stars me-2"></i> Generative AI Discoveries</h3>
+        <p class="text-muted">Our AI analyzed your explicit profile parameters and generated highly specific tangential matches.</p>
+    </div>
+
+    <div class="row">
+        {% for suggestion in ai_suggestions %}
+        <div class="col-md-4 mb-4 reveal-on-scroll">
+            <div class="saas-card h-100 d-flex flex-column border-top-0 position-relative overflow-hidden" style="background: rgba(139, 92, 246, 0.05); border-color: rgba(139, 92, 246, 0.2);">
+                <div class="position-absolute top-0 start-0 w-100" style="background: linear-gradient(90deg, #8b5cf6, #06b6d4); height: 4px;"></div>
+                
+                <div class="mb-3">
+                    <span class="badge border px-2 py-1 bg-transparent" style="color: #8b5cf6; border-color: rgba(139, 92, 246, 0.3) !important;">{{ suggestion.type|title }}</span>
+                </div>
+                
+                <h4 class="fw-bold fs-5 mb-2 text-main">{{ suggestion.name }}</h4>
+                <p class="text-muted small mb-3">{{ suggestion.description }}</p>
+                
+                <div class="mt-auto p-3 bg-transparent border rounded mb-4" style="border-color: rgba(139, 92, 246, 0.1) !important;">
+                    <span class="fw-bold d-block mb-1 small text-main">AI Rationale:</span>
+                    <span class="small text-muted">{{ suggestion.eligibility }}</span>
+                </div>
+                
+                <a href="{{ suggestion.apply_link|default:'#' }}" target="_blank" class="btn-outline-saas w-100 text-decoration-none mt-auto justify-content-center border-0" style="background: rgba(139, 92, 246, 0.1); color: #8b5cf6 !important;">Verify Match</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+<!-- =========================
+     INTERACTIVE PIPELINE SCRIPT
+========================= -->
+<script>
+let selectedSector = null;
+let selectedType = null;
+
+function selectSector(sector) {
+    selectedSector = sector;
+
+    // Toggle Section Visibility
+    document.getElementById("typeSection").style.display = "block";
+    document.getElementById("resultSection").style.display = "none";
+    document.getElementById("resetBtnTop").classList.remove("d-none");
+
+    // Scroll smoothing
+    setTimeout(() => {
+        document.getElementById("typeSection").scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 150);
+
+    highlightActive("sector", sector);
+    
+    // Clear downstream selections
+    document.querySelectorAll('.type-btn').forEach(btn => btn.classList.remove("active"));
+    selectedType = null;
+}
+
+function selectType(type) {
+    selectedType = type;
+
+    document.getElementById("resultSection").style.display = "block";
+    updateResultTitle();
+    
+    // Scroll smoothing
+    setTimeout(() => {
+        document.getElementById("resultSection").scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 150);
+
+    filterResults();
+    highlightActive("type", type);
+}
+
+function highlightActive(group, value) {
+    document.querySelectorAll(`.${group}-btn`).forEach(btn => {
+        btn.classList.remove("active");
+    });
+    document.getElementById(`${group}-${value}`).classList.add("active");
+}
+
+function updateResultTitle() {
+    const sectorName = selectedSector === 'govt' ? 'Government' : 'Private';
+    const typeName = selectedType.charAt(0).toUpperCase() + selectedType.slice(1);
+    document.getElementById("resultTitle").innerHTML = `${sectorName} ${typeName}`;
+}
+
+function filterResults() {
+    let visibleCount = 0;
+    
+    // Iterate manually over DOM to override grid layouts efficiently
+    document.querySelectorAll(".result-card").forEach(card => {
+        let sector = card.getAttribute("data-sector");
+        let type = card.getAttribute("data-type");
+
+        if (sector === selectedSector && type === selectedType) {
+            card.style.display = "block"; 
+            visibleCount++;
+        } else {
+            card.style.display = "none";
+        }
+    });
+    
+    const fallback = document.getElementById("noResultsFallback");
+    if (visibleCount === 0) {
+        fallback.style.display = "block";
+    } else {
+        fallback.style.display = "none";
+    }
+}
+</script>
+{% endblock %}

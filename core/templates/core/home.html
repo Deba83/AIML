@@ -1,0 +1,174 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<!-- Dynamic Greeting Logic -->
+<div class="row pt-4 pb-2 mb-2 reveal-on-scroll">
+    <div class="col-12 text-center text-md-start">
+        <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill" style="background: var(--bg-card); border: 1px solid var(--border-color);">
+            <div class="spinner-grow spinner-grow-sm text-primary" role="status" style="width: 12px; height: 12px;"></div>
+            <span class="small fw-semibold text-muted" id="dynamicGreeting">Welcome!</span>
+        </div>
+    </div>
+</div>
+
+<!-- Clear Hero Section -->
+<div class="row align-items-center justify-content-center pt-2 pb-5 mb-5 text-center position-relative" style="max-width: 900px; margin: 0 auto; z-index: 2;">
+    <div class="col-12 text-center text-md-center reveal-on-scroll mt-3">
+        
+        <!-- Direct Value Headline -->
+        <h1 class="display-3 fw-bold mb-4 word-slide" style="line-height: 1.15; letter-spacing: -0.03em;">
+            Find opportunities you are truly eligible for.
+        </h1>
+        
+        <!-- 1-Sentence Subtext -->
+        <p class="fs-5 text-muted mb-5 mx-auto reveal-on-scroll" style="max-width: 600px; line-height: 1.6; transition-delay: 0.6s;">
+            An AI-powered eligibility engine bridging the gap between individuals and life-changing government schemes, scholarships, and internships.
+        </p>
+        
+        <!-- Direct CTA -->
+        <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center reveal-on-scroll" style="transition-delay: 0.8s;">
+            <a href="{% url 'check_eligibility' %}" class="btn-primary-saas text-decoration-none">
+                Check Eligibility
+            </a>
+            <a href="#how-it-works" class="btn-outline-saas text-decoration-none">
+                Explore Opportunities
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Section 1: How It Works -->
+<div id="how-it-works" class="row my-5 pt-5 pb-4 position-relative border-top" style="border-color: var(--border-color) !important; z-index: 2;">
+    <div class="col-12 text-center mb-5 reveal-on-scroll">
+        <h2 class="fw-bold mb-3 fs-3">How It Works</h2>
+        <p class="text-muted mx-auto" style="max-width: 500px;">Three seamless steps to structure your path forward.</p>
+    </div>
+    
+    <div class="col-md-4 mb-4 reveal-on-scroll">
+        <div class="saas-card h-100 text-center">
+            <div class="icon-container mx-auto">1</div>
+            <h4 class="fw-bold fs-5 mb-3 text-main">Enter your details</h4>
+            <p class="text-muted small mb-0">Fill out a single form capturing your fundamental demographic and educational variables.</p>
+        </div>
+    </div>
+    
+    <div class="col-md-4 mb-4 reveal-on-scroll" style="transition-delay: 0.1s;">
+        <div class="saas-card h-100 text-center">
+            <div class="icon-container mx-auto">2</div>
+            <h4 class="fw-bold fs-5 mb-3 text-main">AI analyzes eligibility</h4>
+            <p class="text-muted small mb-0">Our engine cross-references thousands of parameters to verify hard eligibility structures instantly.</p>
+        </div>
+    </div>
+    
+    <div class="col-md-4 mb-4 reveal-on-scroll" style="transition-delay: 0.2s;">
+        <div class="saas-card h-100 text-center">
+            <div class="icon-container mx-auto">3</div>
+            <h4 class="fw-bold fs-5 mb-3 text-main">Get matched</h4>
+            <p class="text-muted small mb-0">Retrieve guaranteed accurate matches across local, state, and central frameworks.</p>
+        </div>
+    </div>
+</div>
+
+<!-- Section 2: Why Use This Platform -->
+<div class="row my-5 py-5 position-relative" style="z-index: 2;">
+    <div class="col-lg-5 mb-4 mb-lg-0 reveal-on-scroll d-flex flex-column justify-content-center">
+        <h2 class="fw-bold mb-3 fs-3">Why Use This Platform</h2>
+        <p class="text-muted mb-4" style="line-height:1.7;">Traditional systems rely on manual hunting across broken interfaces. JanSahayak eliminates that friction entirely.</p>
+        <a href="{% url 'check_eligibility' %}" class="btn-primary-saas align-self-start text-decoration-none">Start Engine <i class="bi bi-arrow-right ms-2"></i></a>
+    </div>
+    <div class="col-lg-7">
+        <div class="row">
+            <div class="col-md-12 mb-3 reveal-on-scroll" style="transition-delay: 0.1s;">
+                <div class="saas-card d-flex align-items-center gap-4 py-3 px-4">
+                    <div class="icon-container mb-0 flex-shrink-0" style="width: 40px; height: 40px; border-radius: 8px;"><i class="bi bi-stopwatch"></i></div>
+                    <div>
+                        <h5 class="fw-bold mb-1 fs-6 text-main">Saves time</h5>
+                        <p class="text-muted small mb-0">Milliseconds execution against massive public tables.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12 mb-3 reveal-on-scroll" style="transition-delay: 0.2s;">
+                <div class="saas-card d-flex align-items-center gap-4 py-3 px-4">
+                    <div class="icon-container mb-0 flex-shrink-0" style="width: 40px; height: 40px; border-radius: 8px;"><i class="bi bi-search"></i></div>
+                    <div>
+                        <h5 class="fw-bold mb-1 fs-6 text-main">No manual searching</h5>
+                        <p class="text-muted small mb-0">Complete abstraction of complex administrative navigation.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12 reveal-on-scroll" style="transition-delay: 0.3s;">
+                <div class="saas-card d-flex align-items-center gap-4 py-3 px-4">
+                    <div class="icon-container mb-0 flex-shrink-0" style="width: 40px; height: 40px; border-radius: 8px;"><i class="bi bi-person-check-fill"></i></div>
+                    <div>
+                        <h5 class="fw-bold mb-1 fs-6 text-main">Personalized results</h5>
+                        <p class="text-muted small mb-0">Every returned opportunity explicitly targets your raw parameters.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Section 3: Data Sources / Trust -->
+<div class="row my-5 pt-4 pb-5 position-relative border-top" style="border-color: var(--border-color) !important; z-index: 2;">
+    <div class="col-12 text-center mb-5 reveal-on-scroll">
+        <h2 class="fw-bold mb-3 fs-3 text-gradient">Data Sources & Trust</h2>
+        <p class="text-muted mx-auto" style="max-width: 500px;">Direct synchronization with high-tier placement avenues.</p>
+    </div>
+    
+    <div class="col-md-4 mb-4 reveal-on-scroll">
+        <div class="saas-card h-100 d-flex flex-column text-center text-md-start">
+            <h4 class="fw-bold fs-5 mb-3 d-flex align-items-center justify-content-center justify-content-md-start gap-2">
+                <i class="bi bi-shield-check" style="color: var(--primary);"></i> Govt Schemes
+            </h4>
+            <p class="text-muted small mb-0">Synchronized central and state provisions.</p>
+        </div>
+    </div>
+    
+    <div class="col-md-4 mb-4 reveal-on-scroll" style="transition-delay: 0.1s;">
+        <div class="saas-card h-100 d-flex flex-column text-center text-md-start">
+            <h4 class="fw-bold fs-5 mb-3 d-flex align-items-center justify-content-center justify-content-md-start gap-2">
+                <i class="bi bi-award" style="color: var(--accent-1);"></i> Scholarships
+            </h4>
+            <p class="text-muted small mb-0">Tier-1 institutional and private academic grants.</p>
+        </div>
+    </div>
+    
+    <div class="col-md-4 mb-4 reveal-on-scroll" style="transition-delay: 0.2s;">
+        <div class="saas-card h-100 d-flex flex-column text-center text-md-start">
+            <h4 class="fw-bold fs-5 mb-3 d-flex align-items-center justify-content-center justify-content-md-start gap-2">
+                <i class="bi bi-diagram-3" style="color: var(--accent-2);"></i> Internships
+            </h4>
+            <p class="text-muted small mb-0">Corporate and industry-targeted placement roles.</p>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        // Typing Effect & Time Based Greeting
+        const greetingEl = document.getElementById("dynamicGreeting");
+        if(greetingEl) {
+            const hour = new Date().getHours();
+            let timeString = 'Good Morning';
+            if(hour >= 12 && hour < 17) timeString = 'Good Afternoon';
+            else if(hour >= 17) timeString = 'Good Evening';
+            
+            const fullText = `${timeString}. Find what you're eligible for in seconds.`;
+            
+            // Typewriter implementation
+            greetingEl.innerHTML = '';
+            let i = 0;
+            function typeWriter() {
+                if (i < fullText.length) {
+                    greetingEl.innerHTML += fullText.charAt(i);
+                    i++;
+                    setTimeout(typeWriter, 40);
+                }
+            }
+            // slight delay before starting to pair nicely with layout reveal
+            setTimeout(typeWriter, 500);
+        }
+    });
+</script>
+{% endblock %}

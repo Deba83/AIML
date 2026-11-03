@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add Scheme Tester</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; max-width: 800px; margin: auto; }
+        textarea { width: 100%; height: 300px; font-family: monospace; padding: 10px; margin-bottom: 10px; }
+        button { padding: 10px 20px; cursor: pointer; background: #007bff; color: white; border: none; border-radius: 4px; }
+        pre { background: #f8f9fa; padding: 15px; border: 1px solid #ddd; }
+    </style>
+</head>
+<body>
+    <h1>Add Scheme API Tester</h1>
+    <p>Paste your JSON below. This form uses <b>AJAX</b> to hit the DRF endpoint with proper CSRF protection.</p>
+    
+    <div id="status-box"></div>
+
+    <textarea id="json-input">{
+    "name": "Reliance Production-Grade Fellowship",
+    "education_min": 0,
+    "education_max": 5,
+    "category": "ews",
+    "state": "National",
+    "opportunity_type": "fellowship",
+    "provider": "private",
+    "required_documents": ["Master Degree", "Income Certificate"]
+}</textarea>
+    <br>
+    <button onclick="submitScheme()">Submit Scheme</button>
+    <button onclick="undoLast()" style="background: #dc3545;">Undo Last Action</button>
+
+    <h3>Response:</h3>
+    <pre id="response-output">Waiting for submission...</pre>
+
+    {% csrf_token %}
+
+    <script>
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+        async function submitScheme() {
+            const data = document.getElementById('json-input').value;
+            const output = document.getElementById('response-output');
+            output.innerText = "Sending...";
+
+            try {
+                const response = await fetch('/api/add-scheme/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrfToken
+                    },
+                    body: data
+                });
+                const result = await response.json();
+                output.innerText = JSON.stringify(result, null, 2);
+            } catch (err) {
+                output.innerText = "Error: " + err.message;
+            }
+        }
+
+        async function undoLast() {
+            const output = document.getElementById('response-output');
+            output.innerText = "Undoing...";
+            try {
+                const response = await fetch('/api/undo-last/', {
+                    method: 'POST',
+                    headers: { 'X-CSRFToken': csrfToken }
+                });
+                const result = await response.json();
+                output.innerText = JSON.stringify(result, null, 2);
+            } catch (err) {
+                output.innerText = "Error: " + err.message;
+            }
+        }
+    </script>
+</body>
+</html>

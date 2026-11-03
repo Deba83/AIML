@@ -1,0 +1,151 @@
+/* =========================
+   GLOBAL STYLES
+========================= */
+body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+    color: #333;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+}
+
+/* Smooth animation */
+* {
+    transition: all 0.3s ease;
+}
+.navbar {
+    backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+}
+
+.navbar a {
+    color: white !important;
+    font-weight: 500;
+}
+
+.navbar a:hover {
+    text-decoration: underline;
+}
+
+/* =========================
+   GLASS CARD
+========================= */
+.glass-card {
+    background: rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(12px);
+    border-radius: 16px;
+    padding: 20px;
+    color: white;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Hover effect */
+.glass-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+}
+
+/* =========================
+   BUTTONS
+========================= */
+.btn-custom {
+    background: linear-gradient(45deg, #00c6ff, #0072ff);
+    color: white;
+    border: none;
+    border-radius: 30px;
+    padding: 10px 20px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.btn-custom:hover {
+    transform: scale(1.08);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* =========================
+   BADGES
+========================= */
+.badge-eligible {
+    background: #28a745;
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+}
+
+.badge-recommended {
+    background: #ffc107;
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+}
+
+/* =========================
+   SECTION HEADINGS
+========================= */
+.section-title {
+    color: white;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+.ai-section {
+    border: 2px solid rgba(0, 255, 255, 0.4);
+    border-radius: 16px;
+    padding: 20px;
+    margin-top: 40px;
+    background: rgba(0, 0, 0, 0.2);
+}
+
+/* =========================
+   FOOTER
+========================= */
+footer {
+    margin-top: 50px;
+    padding: 20px;
+    text-align: center;
+    color: white;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(10px);
+}
+
+footer a {
+    color: #00c6ff;
+}
+
+/* =========================
+   ANIMATIONS
+========================= */
+.fade-in {
+    animation: fadeIn 1s ease-in;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* =========================
+   CURSOR EFFECT
+========================= */
+.cursor {
+    width: 20px;
+    height: 20px;
+    border: 2px solid #00c6ff;
+    border-radius: 50%;
+    position: fixed;
+    pointer-events: none;
+    transform: translate(-50%, -50%);
+    transition: 0.1s;
+    z-index: 9999;
+}

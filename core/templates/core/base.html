@@ -1,0 +1,233 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JanSahayak - AI Eligibility Platform</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Futuristic AI CSS V2 -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+</head>
+<body>
+    <!-- Abstract Particles & Blurs -->
+    <canvas id="particleBox"></canvas>
+    <div class="blur-blob blob-cyan"></div>
+    <div class="blur-blob blob-purple"></div>
+
+    <!-- AI Engine Activation Popup -->
+    <div class="ai-tooltip" id="aiTooltip">
+        <i class="bi bi-lightning-charge-fill"></i>
+        <span>AI Matching Engine Activated</span>
+    </div>
+
+    <!-- Premium Navbar -->
+    <nav class="saas-nav sticky-top" id="mainNav">
+        <div class="container d-flex align-items-center justify-content-between">
+            <a href="{% url 'home' %}" class="text-decoration-none logo-container d-flex align-items-center gap-2">
+                <div class="js-logo">
+                    <span class="js-logo-text">JS</span>
+                </div>
+                <span class="logo-text text-main fw-bold" style="font-size: 1.15rem; letter-spacing: -0.02em;">JanSahayak</span>
+            </a>
+            
+            <div class="d-none d-md-flex align-items-center gap-4">
+                <a href="{% url 'home' %}" class="nav-link">Home</a>
+                <a href="{% url 'check_eligibility' %}" class="nav-link">Check Eligibility</a>
+                <a href="#how-it-works" class="nav-link">About</a>
+                <a href="#footer" class="nav-link">Contact</a>
+                
+                <button id="themeToggle" class="btn btn-outline-saas border-0 py-1 px-2" style="background:transparent; padding:0; height:auto;">
+                    <i class="bi bi-moon-fill" id="themeIcon"></i>
+                </button>
+            </div>
+            
+            <button class="navbar-toggler d-md-none border-0 shadow-none bg-transparent" type="button" data-bs-toggle="collapse" data-bs-target="#mobileNav">
+                <i class="bi bi-list fs-2" style="color: var(--text-main);"></i>
+            </button>
+        </div>
+        
+        <div class="collapse d-md-none" id="mobileNav">
+            <div class="container py-3 d-flex flex-column gap-3 border-top mt-3" style="border-color: var(--border-color);">
+                <a href="{% url 'home' %}" class="text-decoration-none fw-semibold">Home</a>
+                <a href="{% url 'check_eligibility' %}" class="text-decoration-none fw-semibold">Check Eligibility</a>
+                <a href="#how-it-works" class="text-decoration-none fw-semibold">About</a>
+                <a href="#footer" class="text-decoration-none fw-semibold">Contact</a>
+                <div class="d-flex align-items-center justify-content-between mt-2 pt-2 border-top" style="border-color: var(--border-color);">
+                    <span class="fw-semibold text-muted">Theme</span>
+                    <button id="mobileThemeToggle" class="btn border-0 py-1 px-2 text-main">
+                        <i class="bi bi-moon-fill" id="mobileThemeIcon"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container py-5 flex-grow-1" style="min-height: 75vh;">
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <!-- Professional Footer -->
+    <footer id="footer" class="mt-auto pt-5 pb-4 border-top" style="border-color: var(--border-color); background-color: var(--bg-card); backdrop-filter: blur(10px);">
+        <div class="container">
+            <div class="row mb-4">
+                <div class="col-md-5 mb-4 mb-md-0 d-flex flex-column text-center text-md-start">
+                    <div class="d-flex align-items-center justify-content-center justify-content-md-start gap-2 mb-3">
+                        <div class="js-logo" style="width: 30px; height: 30px; font-size: 14px;">
+                            <span class="js-logo-text">JS</span>
+                        </div>
+                        <span class="fw-bold" style="font-size: 1.1rem;">JanSahayak</span>
+                    </div>
+                    <p class="text-muted small mb-0" style="max-width: 320px; line-height: 1.6;">
+                        An AI-powered eligibility platform matching demographics directly with live government schemes, scholarships, and industry internships.
+                    </p>
+                </div>
+                
+                <div class="col-md-7 d-flex flex-column flex-md-row justify-content-md-end gap-md-5 gap-4 text-center text-md-start">
+                    <div class="d-flex flex-column gap-2">
+                        <span class="text-main small fw-bold text-uppercase mb-1" style="letter-spacing: 0.05em;">Developer</span>
+                        <span class="text-muted small fw-medium">Debashish Sahoo</span>
+                        <a href="mailto:sahoodebashish474@gmail.com" class="text-muted text-decoration-none small transition-hover">sahoodebashish474@gmail.com</a>
+                    </div>
+                    <div class="d-flex flex-column gap-2">
+                        <span class="text-main small fw-bold text-uppercase mb-1" style="letter-spacing: 0.05em;">Network</span>
+                        <a href="https://github.com/Deba83" target="_blank" class="text-muted text-decoration-none small transition-hover"><i class="bi bi-github me-1"></i> GitHub</a>
+                        <a href="https://www.linkedin.com/in/debashish-sahoo-065194347/" target="_blank" class="text-muted text-decoration-none small transition-hover"><i class="bi bi-linkedin me-1"></i> LinkedIn</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="border-top pt-4 text-center text-md-start d-flex flex-column flex-md-row justify-content-between align-items-center" style="border-color: var(--border-color) !important;">
+                <span class="text-muted small">&copy; 2026 JanSahayak. All rights reserved.</span>
+                <span class="text-muted small mt-2 mt-md-0 d-flex align-items-center"><span class="bg-success rounded-circle me-2" style="width:6px; height:6px;"></span> Systems Operational</span>
+            </div>
+        </div>
+    </footer>
+
+    <style>
+        .transition-hover:hover { color: var(--primary) !important; }
+    </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- AI Platform Logic -->
+    <script>
+    // Theme Engine
+    const htmlEl = document.documentElement;
+    function setTheme(theme) {
+        htmlEl.setAttribute("data-theme", theme);
+        localStorage.setItem("theme", theme);
+        
+        const isDark = theme === "dark";
+        const iconCls = isDark ? "bi bi-sun-fill text-warning" : "bi bi-moon-fill text-primary";
+        document.getElementById("themeIcon").className = iconCls;
+        if(document.getElementById("mobileThemeIcon")) document.getElementById("mobileThemeIcon").className = iconCls;
+        
+        window.particleColor = isDark ? "rgba(255, 255, 255, 0.3)" : "rgba(15, 23, 42, 0.2)";
+    }
+    setTheme(localStorage.getItem("theme") || "dark");
+    
+    const themeBtn = document.getElementById("themeToggle");
+    const mThemeBtn = document.getElementById("mobileThemeToggle");
+    
+    if(themeBtn) themeBtn.addEventListener("click", () => setTheme(htmlEl.getAttribute("data-theme") === "dark" ? "light" : "dark"));
+    if(mThemeBtn) mThemeBtn.addEventListener("click", () => setTheme(htmlEl.getAttribute("data-theme") === "dark" ? "light" : "dark"));
+
+    // Canvas Particles
+    const canvas = document.getElementById("particleBox");
+    const ctx = canvas.getContext("2d");
+    let particles = [];
+    
+    function initCanvas() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    }
+    window.addEventListener("resize", initCanvas);
+    initCanvas();
+
+    class Particle {
+        constructor() {
+            this.x = Math.random() * canvas.width;
+            this.y = Math.random() * canvas.height;
+            this.vx = (Math.random() - 0.5) * 0.4;
+            this.vy = (Math.random() - 0.5) * 0.4;
+            this.radius = Math.random() * 1.5 + 0.5;
+        }
+        update() {
+            this.x += this.vx;
+            this.y += this.vy;
+            if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
+            if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
+        }
+        draw() {
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+            ctx.fillStyle = window.particleColor || "rgba(255, 255, 255, 0.3)";
+            ctx.fill();
+        }
+    }
+    for (let i = 0; i < 50; i++) particles.push(new Particle());
+    
+    function animateParticles() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        particles.forEach(p => { p.update(); p.draw(); });
+        requestAnimationFrame(animateParticles);
+    }
+    animateParticles();
+
+    // DOM Bindings
+    document.addEventListener("DOMContentLoaded", () => {
+        // AI Tooltip
+        const tooltip = document.getElementById("aiTooltip");
+        setTimeout(() => { tooltip.classList.add("show"); }, 500);
+        setTimeout(() => { tooltip.classList.remove("show"); }, 4000);
+
+        // Word Slides
+        document.querySelectorAll('.word-slide').forEach(el => {
+            const words = el.innerText.split(' ');
+            el.innerHTML = '';
+            words.forEach((w, i) => {
+                let span = document.createElement('span');
+                span.innerText = w + ' ';
+                span.style.animationDelay = `${i * 0.08}s`;
+                el.appendChild(span);
+            });
+        });
+
+        // Intersection Observers
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if(entry.isIntersecting) {
+                    entry.target.classList.add("visible");
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.15 });
+        
+        document.querySelectorAll('.reveal-on-scroll').forEach(el => observer.observe(el));
+
+        // Button Ripples
+        document.querySelectorAll('.btn-primary-saas, .btn-outline-saas').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                let rect = e.target.getBoundingClientRect();
+                let ripples = document.createElement('span');
+                ripples.style.left = (e.clientX - rect.left) + 'px';
+                ripples.style.top = (e.clientY - rect.top) + 'px';
+                ripples.classList.add('ripple');
+                this.appendChild(ripples);
+                setTimeout(() => ripples.remove(), 600);
+            });
+        });
+
+        // Navbar Shadow
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 20) document.getElementById('mainNav').classList.add('nav-scrolled');
+            else document.getElementById('mainNav').classList.remove('nav-scrolled');
+        });
+    });
+    </script>
+</body>
+</html>

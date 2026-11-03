@@ -1,0 +1,366 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<div class="row justify-content-center my-md-5 my-3">
+    <div class="col-lg-8 col-md-10">
+        <div class="saas-card reveal-on-scroll">
+            <div class="border-bottom mb-4 pb-3" style="border-color: var(--border-color);">
+                <h2 class="fw-bold mb-1">Check Your Eligibility</h2>
+                <p class="text-muted mb-0">Complete the form below to identify your exact matching schemes, scholarships, and internships.</p>
+            </div>
+            
+            <form method="post" action="{% url 'check_eligibility' %}" onsubmit="showLoading()">
+                {% csrf_token %}
+                
+                <!-- Section 1: Personal -->
+                <div class="form-section-header">
+                    <h3>1. Personal Information</h3>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-md-6 mb-3 mb-md-0">
+                        <label for="{{ form.age.id_for_label }}" class="form-label fw-semibold">Age <span class="text-danger">*</span></label>
+                        {{ form.age }}
+                        {% if form.age.errors %}<div class="text-danger small mt-1">{{ form.age.errors }}</div>{% endif %}
+                    </div>
+                    <div class="col-md-6">
+                        <label for="{{ form.gender.id_for_label }}" class="form-label fw-semibold">Gender</label>
+                        {{ form.gender }}
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6 mb-3 mb-md-0">
+                        <label for="{{ form.category.id_for_label }}" class="form-label fw-semibold">Category</label>
+                        {{ form.category }}
+                    </div>
+                    <div class="col-md-6">
+                        <label for="{{ form.state.id_for_label }}" class="form-label fw-semibold">State</label>
+                        {{ form.state }}
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6 mb-3 mb-md-0">
+                        <label for="{{ form.area.id_for_label }}" class="form-label fw-semibold">Area (Rural/Urban)</label>
+                        {{ form.area }}
+                    </div>
+                    <div class="col-md-6 d-flex align-items-center">
+                        <div class="form-check mt-3">
+                            {{ form.is_disabled }}
+                            <label for="{{ form.is_disabled.id_for_label }}" class="form-check-label fw-semibold ms-2">Specially Abled (Divyangjan)</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 2: Financials -->
+                <div class="form-section-header">
+                    <h3>2. Financials & Occupation</h3>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-md-6 mb-3 mb-md-0">
+                        <label for="{{ form.income.id_for_label }}" class="form-label fw-semibold">Annual Income (₹) <span class="text-danger">*</span></label>
+                        {{ form.income }}
+                        {% if form.income.errors %}<div class="text-danger small mt-1">{{ form.income.errors }}</div>{% endif %}
+                    </div>
+                    <div class="col-md-6">
+                        <label for="{{ form.family_income_type.id_for_label }}" class="form-label fw-semibold">Income Type</label>
+                        {{ form.family_income_type }}
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="{{ form.occupation.id_for_label }}" class="form-label fw-semibold">Occupation</label>
+                        {{ form.occupation }}
+                    </div>
+                </div>
+
+                <!-- Section 3: Education -->
+                <div class="form-section-header">
+                    <h3>3. Education & Skills</h3>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-md-6 mb-3 mb-md-0">
+                        <label for="{{ form.education_level.id_for_label }}" class="form-label fw-semibold">Education Level</label>
+                        {{ form.education_level }}
+                    </div>
+                    <div class="col-md-6" id="blockStream" style="display:none;">
+                        <label for="{{ form.stream.id_for_label }}" class="form-label fw-semibold">Course / Stream</label>
+                        {{ form.stream }}
+                    </div>
+                </div>
+
+                <div class="row mb-3" id="branch-field" style="display:none;">
+                    <div class="col-12">
+                        <label for="{{ form.branch.id_for_label }}" class="form-label fw-semibold">Engineering Branch</label>
+                        {{ form.branch }}
+                    </div>
+                </div>
+
+                <div class="row mb-3 mt-4">
+                    <div class="col-12 border-bottom pb-2 mb-3" style="border-color: var(--border-color) !important;">
+                        <h4 class="fw-bold fs-5 mb-0 text-main">Academic Records</h4>
+                        <p class="text-muted small">Fill the applicable grades based on your highest education.</p>
+                    </div>
+
+                    <div class="col-md-6 mb-3" id="block10th" style="display:none;">
+                        <label for="{{ form.marks_10th.id_for_label }}" class="form-label fw-semibold">10th Percentage (%)</label>
+                        {{ form.marks_10th }}
+                    </div>
+
+                    <div class="col-md-6 mb-3" id="block12th" style="display:none;">
+                        <label for="{{ form.marks_12th.id_for_label }}" class="form-label fw-semibold">12th / Diploma (%)</label>
+                        {{ form.marks_12th }}
+                    </div>
+
+                    <div class="col-md-6 mb-3" id="blockUG" style="display:none;">
+                        <label for="{{ form.cgpa_ug.id_for_label }}" class="form-label fw-semibold">UG CGPA (Out of 10)</label>
+                        {{ form.cgpa_ug }}
+                    </div>
+
+                    <div class="col-md-6 mb-3" id="blockPG" style="display:none;">
+                        <label for="{{ form.cgpa_pg.id_for_label }}" class="form-label fw-semibold">PG CGPA (Out of 10)</label>
+                        {{ form.cgpa_pg }}
+                    </div>
+
+                    <div class="col-md-6 mb-3" id="blockYear" style="display:none;">
+                        <label for="{{ form.year.id_for_label }}" class="form-label fw-semibold">Current Year of Study (1-7)</label>
+                        {{ form.year }}
+                    </div>
+                </div>
+                
+                <div class="row mb-3" id="blockSkillsExp" style="display:none;">
+                    <div class="col-md-6 mb-3 mb-md-0">
+                        <label for="{{ form.skills.id_for_label }}" class="form-label fw-semibold">Skills</label>
+                        {{ form.skills }}
+                        <small class="text-muted d-block mt-1">Ex: Python, Data Entry, Design</small>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="{{ form.experience.id_for_label }}" class="form-label fw-semibold">Experience</label>
+                        {{ form.experience }}
+                        <small class="text-muted d-block mt-1">In months (e.g. 6)</small>
+                    </div>
+                </div>
+
+                <!-- Section 4: Documents -->
+                <div class="form-section-header">
+                    <h3>4. Available Documents</h3>
+                </div>
+                <p class="text-muted small mb-4">Select the documents you currently possess. This ensures accurate filtering.</p>
+                
+                <div class="row mb-4 bg-transparent border rounded p-3 m-0" style="border-color: var(--border-color) !important;">
+                    <div class="col-md-4 mb-3">
+                        <div class="form-check">
+                            {{ form.aadhaar }}
+                            <label class="form-check-label fw-medium" for="{{ form.aadhaar.id_for_label }}">{{ form.aadhaar.label }}</label>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="form-check">
+                            {{ form.income_cert }}
+                            <label class="form-check-label fw-medium" for="{{ form.income_cert.id_for_label }}">{{ form.income_cert.label }}</label>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="form-check">
+                            {{ form.caste_cert }}
+                            <label class="form-check-label fw-medium" for="{{ form.caste_cert.id_for_label }}">{{ form.caste_cert.label }}</label>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="form-check">
+                            {{ form.domicile }}
+                            <label class="form-check-label fw-medium" for="{{ form.domicile.id_for_label }}">{{ form.domicile.label }}</label>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="form-check">
+                            {{ form.marksheet }}
+                            <label class="form-check-label fw-medium" for="{{ form.marksheet.id_for_label }}">{{ form.marksheet.label }}</label>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="form-check">
+                            {{ form.bank_passbook }}
+                            <label class="form-check-label fw-medium" for="{{ form.bank_passbook.id_for_label }}">{{ form.bank_passbook.label }}</label>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="form-check">
+                            {{ form.resume }}
+                            <label class="form-check-label fw-medium" for="{{ form.resume.id_for_label }}">{{ form.resume.label }}</label>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="form-check">
+                            {{ form.disability_cert }}
+                            <label class="form-check-label fw-medium" for="{{ form.disability_cert.id_for_label }}">{{ form.disability_cert.label }}</label>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="form-check">
+                            {{ form.transcripts }}
+                            <label class="form-check-label fw-medium" for="{{ form.transcripts.id_for_label }}">{{ form.transcripts.label }}</label>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="form-check">
+                            {{ form.land_record }}
+                            <label class="form-check-label fw-medium" for="{{ form.land_record.id_for_label }}">{{ form.land_record.label }}</label>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="form-check">
+                            {{ form.pan_card }}
+                            <label class="form-check-label fw-medium" for="{{ form.pan_card.id_for_label }}">{{ form.pan_card.label }}</label>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="form-check">
+                            {{ form.ration_card }}
+                            <label class="form-check-label fw-medium" for="{{ form.ration_card.id_for_label }}">{{ form.ration_card.label }}</label>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="form-check">
+                            {{ form.minority_cert }}
+                            <label class="form-check-label fw-medium" for="{{ form.minority_cert.id_for_label }}">{{ form.minority_cert.label }}</label>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="form-check">
+                            {{ form.admission_letter }}
+                            <label class="form-check-label fw-medium" for="{{ form.admission_letter.id_for_label }}">{{ form.admission_letter.label }}</label>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="form-check">
+                            {{ form.experience_cert }}
+                            <label class="form-check-label fw-medium" for="{{ form.experience_cert.id_for_label }}">{{ form.experience_cert.label }}</label>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="form-check">
+                            {{ form.death_cert }}
+                            <label class="form-check-label fw-medium" for="{{ form.death_cert.id_for_label }}">{{ form.death_cert.label }}</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-grid mt-5">
+                    <button type="submit" id="submitBtn" class="btn-primary-saas py-3 w-100 fs-5">
+                        <span id="btnText">Find Opportunities</span>
+                        <span id="btnSpinner" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Global form override for clean UI */
+    .form-control, .form-select {
+        background-color: var(--bg-main) !important;
+        color: var(--text-main) !important;
+        border: 1px solid var(--border-color) !important;
+        border-radius: 8px !important;
+        padding: 10px 16px !important;
+        box-shadow: none !important;
+        font-family: 'Inter', sans-serif;
+    }
+    .form-control:focus, .form-select:focus {
+        border-color: var(--primary) !important;
+        box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2) !important;
+        outline: none !important;
+    }
+    .form-check-input {
+        background-color: var(--bg-main);
+        border: 1px solid var(--border-color);
+    }
+    .form-check-input:checked {
+        background-color: var(--primary);
+        border-color: var(--primary);
+    }
+</style>
+
+<script>
+    function showLoading() {
+        const btnText = document.getElementById('btnText');
+        const btnSpinner = document.getElementById('btnSpinner');
+        btnText.innerText = 'Analyzing profile... ';
+        btnSpinner.classList.remove('d-none');
+    }
+
+    const handleEducationFlow = () => {
+        const highestEdu = document.getElementById("highestEdu");
+        if (!highestEdu) return;
+        
+        const level = highestEdu.value;
+        const b10 = document.getElementById("block10th");
+        const b12 = document.getElementById("block12th");
+        const bug = document.getElementById("blockUG");
+        const bpg = document.getElementById("blockPG");
+        const bYear = document.getElementById("blockYear");
+        const bSkillsExp = document.getElementById("blockSkillsExp");
+        const bStream = document.getElementById("blockStream");
+        const bBranch = document.getElementById("branch-field");
+
+        if (!b10 || !b12 || !bug || !bpg || !bYear || !bSkillsExp || !bStream) return;
+
+        // Flush all states
+        b10.style.display = "none";
+        b12.style.display = "none";
+        bug.style.display = "none";
+        bpg.style.display = "none";
+        bYear.style.display = "none";
+        bSkillsExp.style.display = "none";
+        bStream.style.display = "none";
+        bBranch.style.display = "none"; // Hide branch by default on education change
+
+        // Logic routing based on strict rules
+        if (level === "under_10") {
+            // Show only basic fields, hide everything else. (Already hidden by flush)
+        } else if (level === "10th" || level === "iti") {
+            b10.style.display = "block";
+            // For 10th and ITI, only 10th percentage is shown
+        } else if (level === "12th" || level === "diploma") {
+            b10.style.display = "block";
+            b12.style.display = "block";
+            bStream.style.display = "block";
+        } else if (level === "ug") {
+            b10.style.display = "block";
+            b12.style.display = "block";
+            bug.style.display = "block";
+            bYear.style.display = "block";
+            bSkillsExp.style.display = "flex";
+            bStream.style.display = "block";
+        } else if (level === "pg") {
+            b10.style.display = "block";
+            b12.style.display = "block";
+            bug.style.display = "block";
+            bpg.style.display = "block";
+            bYear.style.display = "block";
+            bSkillsExp.style.display = "flex";
+            bStream.style.display = "block";
+        }
+    };
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const stream = document.getElementById("id_stream");
+        const branchField = document.getElementById("branch-field");
+
+        if(stream && branchField) {
+            stream.addEventListener("change", function() {
+                branchField.style.display = (this.value === "Engineering") ? "flex" : "none";
+            });
+            if(stream.value === "Engineering") branchField.style.display = "flex";
+        }
+
+        // Initialize cascading education displays
+        handleEducationFlow();
+    });
+</script>
+{% endblock %}
